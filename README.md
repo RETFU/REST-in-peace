@@ -41,7 +41,7 @@ Quelques règles pour définir une resource
 * nommé avec des - ou des _
 * les ids sont des UUID
 
-Pour interragir avec les ressources, on s'appuie sur HTTP:
+Pour interagir avec les ressources, on s'appuie sur HTTP:
 
 URL | Action
 ------------ | -------------
@@ -76,7 +76,7 @@ POST /items/1782/comments/56/star | Met en favori le commentaire 56 de l'item 17
 
 ## HTTP basic authentification
 
-```HTTP
+```http
 Authorization: Basic cGhwOm1lZXR1cA==
 ```
 
@@ -88,11 +88,11 @@ Authorization: Basic cGhwOm1lZXR1cA==
 
 ## Query Authentification
 
-```HTTP
+```http
 GET /items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx&signature=3051d3c053e291b723f16944893df966ccea2a34ee162d5ccda1276a47e796e7
 ```
 
-* le client signe la requête ```signature=SHA256( items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx&param=X )```
+* le client signe la requête ```signature=SHA256( items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx )```
 * le serveur valide la signature et vérifie si le timestamp < X secondes (X étant définit sur le serveur)
 
 > Il faut que le client et le serveur soit configuré de la même façon niveau date pour avoir des timestamps comparables
@@ -118,13 +118,13 @@ Retourner [`406 Not acceptable`](http://httpstatus.es/406) si on demande autre c
 Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans sont logging, debuging... en identifiant de manière unique chaque requète. 
 
 On accèpte du JSON pour le body des requètes dans le cas d'un POST, PUT ou PATCH. Ca nous permet d'avoir la même sérialisation entre le body de la requète et le body de la réponse.
-On pourra facilement passer des structures complètes ou partielles de ressources et avoir le typage JSON: Array, String, Number, Object, Boolean, Null.
+On pourra facilement passer des structures complètes ou partielles de ressources et bénéficier du typage JSON: Array, String, Number, Object, Boolean, Null.
 
 La requête doit donc comporter un header Content-Type: `Content-Type: application/json;charset=utf-8`.
 
 Retourner [`415 Unsupported media type`](http://httpstatus.es/415) si Content-type n'est pas supporté par le serveur.
 
-> On peut supporter form-encoded data en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côter serveur à typer les valeurs manuelement et on n'aura pas de structure de ressource out of box.
+> On peut supporter `x-www-form-urlencoded` en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côter serveur à typer les valeurs manuelement et on n'aura pas de structure de ressource out of box.
 
 Il ne faudra pas oublier d'indiquer qu'on veut la réponse gzippée via `Accept-Encoding: gzip`.
 
@@ -199,7 +199,7 @@ Ce qui nous permettra éventuelement de retourner la resource imbriquée inline 
   "country": {
     "id": 569,
     "name": "France",
-    "code_iso": "FR"
+    "codeISO": "FR"
   }
 }
 ```
@@ -313,7 +313,7 @@ $ curl -X POST https://api.domain.com/v2/item?page=2&per_page=100 \
 Le serveur doit retourner [`206 Partial content`](http://httpstatus.es/206) si on a pas toutes les ressrouces, si elles sont toutes retournée [`201 OK`](http://httpstatus.es/200)
 
 Utiliser le header `Link` pour transmettre la pagination:
-```HTTP
+```http
 Link: <https://api.domain.com/v2/item?page=3&per_page=100>; rel="next", <https://api.domain.com/v2/item?page=1&per_page=100>; rel="prev"
 ```
 > Le client n'aura pas à construire la pagination.
@@ -321,7 +321,7 @@ Link: <https://api.domain.com/v2/item?page=3&per_page=100>; rel="next", <https:/
 > On peut aussi ajouter la première et la dernière page `rel=first` et `rel=last`.
 
 Ajouter un header custom pour indiquer le nombre totale de ressource disponible:
-```HTTP
+```http
 X-Total-Count: 456
 X-Page-Max-Range: 100
 ```
@@ -357,7 +357,7 @@ Le client enverra une requête `OPTION` (preflighted request) avant chaque requ�
 
 En retour le serveur indiquera ce qui est permis, exemple:
 
-```HTTP
+```http
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE
 Access-Control-Allow-Credentials: true
