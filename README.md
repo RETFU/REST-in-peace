@@ -39,6 +39,8 @@ Date | Toujours UTC et au format [ISO8601](https://en.wikipedia.org/wiki/ISO_860
 * Nommé avec des - ou des _
 * Les ids des représentations sont des UUID
 * Ne reflète pas forcément votre modèle de donnée
+* Une ressource = une URI
+* Une ressource = plusieurs représentation (JSON, XML, ...)
 
 ### Interactions
 
@@ -87,8 +89,6 @@ Retourner [`406 Not acceptable`](http://httpstatus.es/406) si on demande autre c
 
 > Si on doit gérer XML par exemple `Accept: application/json; application/xml` mais on garde JSON en choix n°1
 
-Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans sont logging, debuging... en identifiant de manière unique chaque requète. 
-
 On accèpte du JSON pour le body des requètes dans le cas d'un POST, PUT ou PATCH. Ca nous permet d'avoir la même sérialisation entre le body de la requète et le body de la réponse.
 On pourra facilement passer des structures complètes ou partielles de ressources et bénéficier du typage JSON: Array, String, Number, Object, Boolean, Null.
 
@@ -107,7 +107,6 @@ $ curl -X POST https://api.domain.com/v2/items \
     -H "Content-Type: application/json;charset=utf-8" \
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
-    -H "X-Request-UUID: 454684315618613" \
     -d '{"name": "Jo", "age": 55, "isGeek": true}'
 
 {
@@ -126,6 +125,8 @@ On ne supporte que le format **JSON** pour la réponse.
 > [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI
 
 On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip.
+
+Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans sont logging, debuging... en identifiant de manière unique chaque requète. 
 
 On n'enveloppe pas les réponses avec une propriété data ou item içi, ça n'a pas d'intérêt:
 
@@ -275,7 +276,6 @@ $ curl -X POST https://api.domain.com/v2/item?page=2&per_page=100 \
     -H "Content-Type: application/json"
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
-    -H "X-Request-UUID: 454684315618778" \
 ```
 
 > On pourrait utiliser le header `Range` mais par affordance et pour le côté pratique il vaut mieux utiliser la querystring.
@@ -308,7 +308,6 @@ $ curl -X POST https://api.domain.com/v2/item?q=toto&isGeek=false&age=18,19&sort
     -H "Content-Type: application/json"
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
-    -H "X-Request-UUID: 454684315618778" \
 ```
 
 > q pour une recherche fulltext. On peut aussi se servir des filtres pour faire une recherche sur un champs particulier, exemple name=Marado*
