@@ -37,7 +37,6 @@ Date | Toujours UTC et au format [ISO8601](https://en.wikipedia.org/wiki/ISO_860
 
 * Toujours au pluriel
 * Nommé avec des - ou des _
-* Les ids des représentations sont des UUID
 * Ne reflète pas forcément votre modèle de donnée
 * Une ressource = une URI
 * Une ressource = plusieurs représentation (JSON, XML, ...)
@@ -79,54 +78,15 @@ POST /items/1782/translate | Traduit l'item 1782
 POST /items/1782/enable | Active l'item 1782
 POST /items/1782/comments/56/star | Met en favori le commentaire 56 de l'item 1782
 
-# Requête
-
-On ne supporte que le format **JSON** pour la réponse.
-
-La requète doit donc avoir un header `Accept: application/json`
-
-Retourner [`406 Not acceptable`](http://httpstatus.es/406) si on demande autre chose.
-
-> Si on doit gérer XML par exemple `Accept: application/json; application/xml` mais on garde JSON en choix n°1
-
-On accèpte du JSON pour le body des requètes dans le cas d'un POST, PUT ou PATCH. Ca nous permet d'avoir la même sérialisation entre le body de la requète et le body de la réponse.
-On pourra facilement passer des structures complètes ou partielles de ressources et bénéficier du typage JSON: Array, String, Number, Object, Boolean, Null.
-
-La requête doit donc comporter un header Content-Type: `Content-Type: application/json;charset=utf-8`.
-
-Retourner [`415 Unsupported media type`](http://httpstatus.es/415) si Content-type n'est pas supporté par le serveur.
-
-> On peut supporter `x-www-form-urlencoded` en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côté serveur à typer les valeurs manuellement et on n'aura pas de structure de ressource out of box.
-
-Il ne faudra pas oublier d'indiquer qu'on veut la réponse gzippée via `Accept-Encoding: gzip`.
-
-> La plupart des clients supportent out of box gzip il ne faut pas s'en priver!
-
-```bash
-$ curl -X POST https://api.domain.com/v2/items \
-    -H "Content-Type: application/json;charset=utf-8" \
-    -H "Accept: application/json" \
-    -H "Accept-Encoding: gzip" \
-    -d '{"name": "Jo", "age": 55, "isGeek": true}'
-
-{
-  "id": 7856,
-  "name": "Jo",
-  "age": 18,
-  "isGeek": true
-  ...
-}
-```
-
-# Réponse
+# Représentation
 
 On ne supporte que le format **JSON** pour la réponse.
 
 > [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI
 
-On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip.
+On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip. 
 
-Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans sont logging, debuging... en identifiant de manière unique chaque requète. 
+Les ids des représentations sont des UUID. Cela permet de ne pas se marcher sur les pieds avec les IDs que pourrait avoir à gérer le client pour son business.
 
 On n'enveloppe pas les réponses avec une propriété data ou item içi, ça n'a pas d'intérêt:
 
@@ -180,6 +140,50 @@ Ce qui nous permettra éventuelement de retourner la ressource imbriquée inline
   }
 }
 ```
+
+
+# Requête
+
+On ne supporte que le format **JSON** pour la réponse.
+
+La requète doit donc avoir un header `Accept: application/json`
+
+Retourner [`406 Not acceptable`](http://httpstatus.es/406) si on demande autre chose.
+
+> Si on doit gérer XML par exemple `Accept: application/json; application/xml` mais on garde JSON en choix n°1
+
+On accèpte du JSON pour le body des requètes dans le cas d'un POST, PUT ou PATCH. Ca nous permet d'avoir la même sérialisation entre le body de la requète et le body de la réponse.
+On pourra facilement passer des structures complètes ou partielles de ressources et bénéficier du typage JSON: Array, String, Number, Object, Boolean, Null.
+
+La requête doit donc comporter un header Content-Type: `Content-Type: application/json;charset=utf-8`.
+
+Retourner [`415 Unsupported media type`](http://httpstatus.es/415) si Content-type n'est pas supporté par le serveur.
+
+> On peut supporter `x-www-form-urlencoded` en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côté serveur à typer les valeurs manuellement et on n'aura pas de structure de ressource out of box.
+
+Il ne faudra pas oublier d'indiquer qu'on veut la réponse gzippée via `Accept-Encoding: gzip`.
+
+> La plupart des clients supportent out of box gzip il ne faut pas s'en priver!
+
+```bash
+$ curl -X POST https://api.domain.com/v2/items \
+    -H "Content-Type: application/json;charset=utf-8" \
+    -H "Accept: application/json" \
+    -H "Accept-Encoding: gzip" \
+    -d '{"name": "Jo", "age": 55, "isGeek": true}'
+
+{
+  "id": 7856,
+  "name": "Jo",
+  "age": 18,
+  "isGeek": true
+  ...
+}
+```
+
+# Réponse
+
+Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans sont logging, debuging... en identifiant de manière unique chaque requète.
 
 Il faudra aussi retourner le bon code HTTP:
 
