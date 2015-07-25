@@ -6,12 +6,13 @@ Ce document est une sorte de recette pour produire une API "REST" selon les bonn
 
 Il n'est pas exhaustif, ne recensent pas toutes les pratiques.
 
-Des choix sont fait pour rester pragmatique quand il n'y a pas vraiment de standard.
+Des choix sont fait pour rester pragmatique quand il n'y a pas vraiment de bonnes pratiques.
 
-D'ailleurs on parle içi d'API REST au sens "marketing" du terme puisqu'il ne vise pas à atteindre le level3 du 
-[modèle de maturité de Richardson](http://blog.xebia.fr/2010/06/25/rest-richardson-maturity-model/) mais pluôt d'une API HTTP++ (définit très justement par [William Durant](https://youtu.be/u_jDzcXCimM?list=PL9zDdgiGjkIc_1wnKTdU68dmVZ77ayPwW)).
+On parle içi d'API REST au sens "marketing" du terme puisque ce document ne vise pas à atteindre le level3 du 
+[modèle de maturité de Richardson](http://blog.xebia.fr/2010/06/25/rest-richardson-maturity-model/).<br/>
+On parlera pluôt d'une API HTTP++ (définit très justement par [William Durant](https://youtu.be/u_jDzcXCimM?list=PL9zDdgiGjkIc_1wnKTdU68dmVZ77ayPwW)).
 
-# Base
+# Les bases
 
 Tous les appels doivent être fait via SSL.
 
@@ -20,8 +21,9 @@ Tout est encodé en UTF-8: la réponse et la requète (header, body, querystring
 L'api doit être versionnée via l'URL: https://api.domain.com/v2
 
 > Pas plus de 2 versions en même temps sinon c'est ingérable
+> <br/>Via Header `Accept: application/json; version=2` mais par affordance et pour le côté pratique il vaut mieux utiliser l'URL
 
-# Type de données
+#### Type de données
 
 Type | Description
 ------------ | -------------
@@ -33,15 +35,14 @@ Date | Toujours UTC et au format [ISO8601](https://en.wikipedia.org/wiki/ISO_860
 
 # Ressource
 
-Le but de L'API est d'exposer des ressources qui pourront être consommées par un client (frontend et/ou backend selon les cas).
-Elles ne reflètent pas **forcément** votre modèle de donnée.
+* Toujours au pluriel
+* Nommé avec des - ou des _
+* Les ids des représentations sont des UUID
+* Ne reflète pas forcément votre modèle de donnée
 
-Quelques règles pour définir une resource
-* on utilise toujours le pluriel
-* nommé avec des - ou des _
-* les ids sont des UUID
+### Interactions
 
-Pour interagir avec les ressources, on s'appuie sur HTTP:
+Pour interagir avec les ressources, on s'appuie sur HTTP.
 
 URL | Action
 ------------ | -------------
@@ -53,7 +54,9 @@ PUT /items/1782 | Mise à jour de l'item 1782
 PATCH /items/1782 | Mise à jour partielle de l'item 1782 (1 ou plusieurs propriétés)
 DELETE /items/1782 | Suppression de l'item 1782
 
-On a parfois des relations entre nos ressources. On utilisera la même mécanique via HTTP:
+### Relations
+
+On a parfois des relations entre nos ressources. On utilisera la même mécanique via HTTP.
 
 URL | Action
 ------------ | -------------
@@ -64,44 +67,15 @@ PUT /items/1782/comments/56 | Mise à jour du commentaire 56 pour l'item 1782
 PATCH /items/1782/comments/56 | Mise à jour partielle du commentaire #56 pour l'item #1782
 DELETE /items/1782/comments/56 | Suppression du commentaire 56 pour l'item 1782
 
-Il nous faut parfois effectuer des actions sur nos ressources, la pratique veut qu'on utilisera systématiquement POST:
+### Actions
+
+Il nous faut parfois effectuer des actions sur nos ressources, la pratique veut qu'on utilisera systématiquement **POST**.
 
 URL | Action
 ------------ | -------------
 POST /items/1782/translate | Traduit l'item 1782
 POST /items/1782/enable | Active l'item 1782
 POST /items/1782/comments/56/star | Met en favori le commentaire 56 de l'item 1782
-
-# Authentification/Authorization
-
-## HTTP basic authentification
-
-```http
-Authorization: Basic cGhwOm1lZXR1cA==
-```
-
-* username:password encodé en base64
-* toujours utilisé avec SSL
-* maîtrise le client et le serveur (le user:password est côté client)
-
-> Rapide à mettre en place, mais pas très secure, on doit avoir les credentials sur le client
-
-## Query Authentification
-
-```http
-GET /items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx&signature=3051d3c053e291b723f16944893df966ccea2a34ee162d5ccda1276a47e796e7
-```
-
-* le client signe la requête ```signature=SHA256( items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx )```
-* le serveur valide la signature et vérifie si le timestamp < X secondes (X étant définit sur le serveur)
-
-> Il faut que le client et le serveur soit configuré de la même façon niveau date pour avoir des timestamps comparables
-
-## OAuth2
-
-Voir la [doc](http://oauth.net/2) 
-
-> Une grande majorité des géants du web l'utilise
 
 # Requête
 
@@ -111,9 +85,7 @@ La requète doit donc avoir un header `Accept: application/json`
 
 Retourner [`406 Not acceptable`](http://httpstatus.es/406) si on demande autre chose.
 
-> [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI
-
-> Dans ce cas on gère `Accept: application/json; application/xml` mais on garde JSON en choix n°1
+> Si on doit gérer XML par exemple `Accept: application/json; application/xml` mais on garde JSON en choix n°1
 
 Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans sont logging, debuging... en identifiant de manière unique chaque requète. 
 
@@ -124,11 +96,11 @@ La requête doit donc comporter un header Content-Type: `Content-Type: applicati
 
 Retourner [`415 Unsupported media type`](http://httpstatus.es/415) si Content-type n'est pas supporté par le serveur.
 
-> On peut supporter `x-www-form-urlencoded` en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côter serveur à typer les valeurs manuelement et on n'aura pas de structure de ressource out of box.
+> On peut supporter `x-www-form-urlencoded` en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côté serveur à typer les valeurs manuellement et on n'aura pas de structure de ressource out of box.
 
 Il ne faudra pas oublier d'indiquer qu'on veut la réponse gzippée via `Accept-Encoding: gzip`.
 
-> La pluspart des clients supportent out of box gzip il ne faut pas s'en priver!
+> La plupart des clients supportent out of box gzip il ne faut pas s'en priver!
 
 ```bash
 $ curl -X POST https://api.domain.com/v2/items \
@@ -148,6 +120,10 @@ $ curl -X POST https://api.domain.com/v2/items \
 ```
 
 # Réponse
+
+On ne supporte que le format **JSON** pour la réponse.
+
+> [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI
 
 On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip.
 
@@ -188,7 +164,7 @@ Plutôt que:
 }
 ```
 
-Ce qui nous permettra éventuelement de retourner la resource imbriquée inline et ainsi de garder la même structure de réponse et d'éviter des requètes supplémentaires. On pourra utiliser un header `X-Resource-Nested: true` pour indiquer au serveur que l'on veut aussi les resources imbriquées.
+Ce qui nous permettra éventuelement de retourner la ressource imbriquée inline et ainsi de garder la même structure de réponse et d'éviter des requètes supplémentaires. On pourra utiliser un header `X-Resource-Nested: true` pour indiquer au serveur que l'on veut aussi les ressources imbriquées.
 
 ```json
 {
@@ -222,7 +198,7 @@ Lors d'un [`201 Ok`](http://httpstatus.es/201):
 
 # Error
 
-Lorsqu'une erreur survient, il faut que le client puisse comprendre ce qui se passe et éventuelement agir.
+Lorsqu'une erreur survient, il faut que le client puisse comprendre ce qui se passe et éventuellement agir.
 Il faut s'appuyer sur les status HTTP 40x et 50x qui répondent à tous les cas, même si dans la pratique une dizaine suffit. Il faut aussi retourner une réponse avec une structure qui sera toujours la même quelque soit l'erreur:
 
 ```json
@@ -288,13 +264,6 @@ HTTP status code | Information
 [`500 Internal Server Error`](http://httpstatus.es/500) | Certainement une coquille dans le code ^^
 [`503 Service Unvailable`](http://httpstatus.es/429) | Lors d'une maintenance ou si l'on veut couper l'API
 
-# Cache via timestamp
-
-On envoie le header ```If-Modified-Since``` pour validé que le ressource n'a pas été modifiée. Dans ce cas on retourne un [`304 Not Modified`](http://httpstatus.es/304).
-Sinon on retourne la ressource avec le header ```Last-Modified```.
-
-> On pourrait utiliser Etag, mais ça nécéssite de maintenir un hash de la ressource alors qu'on aura toujours un timestamp de modification.
-
 # Pagination
 
 ## Requête
@@ -304,13 +273,16 @@ On utilise la querystring:
 ```bash
 $ curl -X POST https://api.domain.com/v2/item?page=2&per_page=100 \
     -H "Content-Type: application/json"
+    -H "Accept: application/json" \
+    -H "Accept-Encoding: gzip" \
+    -H "X-Request-UUID: 454684315618778" \
 ```
 
 > On pourrait utiliser le header `Range` mais par affordance et pour le côté pratique il vaut mieux utiliser la querystring.
 
 ## Réponse
 
-Le serveur doit retourner [`206 Partial content`](http://httpstatus.es/206) si on a pas toutes les ressrouces, si elles sont toutes retournée [`201 OK`](http://httpstatus.es/200)
+Le serveur doit retourner [`206 Partial content`](http://httpstatus.es/206) si on n'a pas toutes les ressrouces, si elles sont toutes retournée [`201 OK`](http://httpstatus.es/200)
 
 Utiliser le header `Link` pour transmettre la pagination:
 ```http
@@ -334,9 +306,50 @@ On utilise la querystring:
 ```bash
 $ curl -X POST https://api.domain.com/v2/item?q=toto&isGeek=false&age=18,19&sort=name,id \
     -H "Content-Type: application/json"
+    -H "Accept: application/json" \
+    -H "Accept-Encoding: gzip" \
+    -H "X-Request-UUID: 454684315618778" \
 ```
 
 > q pour une recherche fulltext. On peut aussi se servir des filtres pour faire une recherche sur un champs particulier, exemple name=Marado*
+
+# Cache via timestamp
+
+On envoie le header ```If-Modified-Since``` pour valider que la ressource n'a pas été modifiée. Dans ce cas on retourne un [`304 Not Modified`](http://httpstatus.es/304).
+Sinon on retourne la ressource avec le header ```Last-Modified```.
+
+> On pourrait utiliser Etag, mais ça nécessite de maintenir un hash de la ressource alors qu'on aura toujours un timestamp de modification.
+
+# Authentification
+
+## HTTP basic authentification
+
+```http
+Authorization: Basic cGhwOm1lZXR1cA==
+```
+
+* username:password encodé en base64
+* toujours utilisé avec SSL
+* maîtrise le client et le serveur (le user:password est côté client)
+
+> Rapide à mettre en place, mais pas très secure, on doit avoir les credentials sur le client
+
+## Query Authentification
+
+```http
+GET /items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx&signature=3051d3c053e291b723f16944893df966ccea2a34ee162d5ccda1276a47e796e7
+```
+
+* le client signe la requête ```signature=SHA256( items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx )```
+* le serveur valide la signature et vérifie si le timestamp < X secondes (X étant définit sur le serveur)
+
+> Il faut que le client et le serveur soit configuré de la même façon niveau date pour avoir des timestamps comparables
+
+## OAuth2
+
+Voir la [doc](http://oauth.net/2) 
+
+> Une grande majorité des géants du web l'utilise
 
 # Rate limiting
 
