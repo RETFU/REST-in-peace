@@ -327,7 +327,7 @@ Le serveur doit retourner [`400 Bad request`](http://httpstatus.es/400) si on d√
 On utilise la querystring:
 
 ```bash
-$ curl -X POST https://api.domain.com/v2/items?q=toto&isGeek=false&age=18,19&sort=name,id \
+$ curl -X GET https://api.domain.com/v2/items?q=toto&isGeek=false&age=18,19&sort=name,id \
     -H "Content-Type: application/json"
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
