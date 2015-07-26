@@ -93,6 +93,8 @@ POST /items/1782/translate | Traduit l'item 1782
 POST /items/1782/enable | Active l'item 1782
 POST /items/1782/comments/56/star | Met en favori le commentaire 56 de l'item 1782
 
+Bien que généralement à éviter, une action est utile lorsqu'elle entraîne des effets de bord non observables via l'API, ou pour simplifier une opération courante qui requerrait plusieurs appels RESTful.
+
 # Représentation
 
 On ne supporte que le format **JSON** pour la réponse.
