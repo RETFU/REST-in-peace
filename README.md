@@ -85,7 +85,7 @@ DELETE /items/1782/comments/56 | Suppression du commentaire 56 pour l'item 1782
 
 ### Actions
 
-Il nous faut parfois effectuer des actions sur nos ressources, la pratique veut qu'on utilisera systématiquement **POST**.
+Il nous faut parfois effectuer des actions sur nos ressources, la pratique veut qu'on utilisera systématiquement **POST** (la  méthode **POST** est utilisée pour ajouter une nouvelle ressource; ici, la nouvelle ressource est l'action).
 
 URL | Action
 ------------ | -------------
