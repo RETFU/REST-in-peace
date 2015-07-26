@@ -12,7 +12,7 @@ On parlera pluôt d'une API HTTP++ (définie très justement par [William Durant
 
 Pour rappel:
 
-URI = https://api.domain.com/v2/items/5 
+URL = https://api.domain.com/v2/items/5 
 
 Ressource = https://api.domain.com/v2/ **items/5**
 
@@ -52,7 +52,7 @@ Date | Toujours UTC et au format [ISO8601](https://en.wikipedia.org/wiki/ISO_860
 * Toujours au pluriel
 * Nommée avec des - ou des _
 * Ne reflète pas forcément votre modèle de donnée
-* Une ressource = une URI
+* Une ressource = une URL
 * Une ressource = plusieurs représentations (JSON, XML, ...)
 
 ### Interactions
@@ -217,7 +217,7 @@ Lors d'un [`200 Ok`](http://httpstatus.es/200) **on doit retourner la ressource*
 
 Lors d'un [`201 Ok`](http://httpstatus.es/201):
 * on doit retourner la ressource
-* on doit indiquer l'URI de la nouvelle ressource dans le header `Location: https://api.domain.com/v2/items/1783`
+* on doit indiquer l'URL de la nouvelle ressource dans le header `Location: https://api.domain.com/v2/items/1783`
 
 # Error
 
