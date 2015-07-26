@@ -144,7 +144,7 @@ Ce qui nous permettra éventuelement de retourner la ressource imbriquée inline
 
 # Requête
 
-On ne supporte que le format **JSON** pour la réponse.
+On ne supporte que le format **JSON** pour la représentation de la réponse.
 
 La requète doit donc avoir un header `Accept: application/json`
 
