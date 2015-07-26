@@ -281,6 +281,7 @@ HTTP status code | Information
 [`404 Not Found`](http://httpstatus.es/404) | Resource pas trouvée (inexistante ou suite à un `DELETE`)
 [`405 Method Not Allowed`](http://httpstatus.es/405) | Méthode HTTP non autorisée (utilisation d'un `POST` alors qu'on attend un `DELETE`)
 [`406 Not acceptable`](http://httpstatus.es/405) | Format de retour non disponible (la requête demande du XML alors qu'on ne gère que du JSON)
+[`409 Conflict`](http://httpstatus.es/409) | Typiquement quand on POST une ressource qui existe déjà, ou qu'un PATCH incompatible a été soumis par un autre agent
 [`415 Unsupported Media Type`](http://httpstatus.es/415) | Content type pas supporté (on envoie du XML alors qu'on ne suppporte que JSON)
 [`422 Unprocessable Entity`](http://httpstatus.es/422) | Tout ce qui touche à la validation
 [`429 Too Many Requests`](http://httpstatus.es/429) | Trop de requêtes (on a dépassé le rate limit)
