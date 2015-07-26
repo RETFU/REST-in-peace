@@ -4,9 +4,9 @@
 
 Ce document est une sorte de recette pour produire une API "REST" selon les bonnes pratiques en cours.
 
-Il n'est pas exhaustif, des choix sont fait pour rester pragmatique quand il n'y a pas vraiment de bonnes pratiques.
+Il n'est pas exhaustif, des choix sont faits pour rester pragmatique quand il n'y a pas vraiment de bonnes pratiques.
 
-On parle içi d'API REST au sens "marketing" du terme puisque ce document ne vise pas à atteindre le level3 du 
+On parle ici d'API REST au sens "marketing" du terme puisque ce document ne vise pas à atteindre le level3 du 
 [modèle de maturité de Richardson](http://blog.xebia.fr/2010/06/25/rest-richardson-maturity-model/).<br/>
 On parlera pluôt d'une API HTTP++ (définie très justement par [William Durant](https://youtu.be/u_jDzcXCimM?list=PL9zDdgiGjkIc_1wnKTdU68dmVZ77ayPwW)).
 
@@ -16,7 +16,7 @@ URI = https://api.domain.com/v2/items/5
 
 Ressource = https://api.domain.com/v2/ **items/5**
 
-Représentation (içi JSON)
+Représentation (ici JSON)
 ```json
 {
   "id": 7856,
@@ -28,7 +28,7 @@ Représentation (içi JSON)
 
 # Les bases
 
-Tous les appels doivent être fait via SSL.
+Tous les appels doivent être faits via SSL.
 
 Tout est encodé en UTF-8: la réponse (représentation) et la requète (header, body, querystring).
 
@@ -53,13 +53,13 @@ Date | Toujours UTC et au format [ISO8601](https://en.wikipedia.org/wiki/ISO_860
 * Nommée avec des - ou des _
 * Ne reflète pas forcément votre modèle de donnée
 * Une ressource = une URI
-* Une ressource = plusieurs représentation (JSON, XML, ...)
+* Une ressource = plusieurs représentations (JSON, XML, ...)
 
 ### Interactions
 
 Pour interagir avec les ressources, on s'appuie sur HTTP.
 
-URL | Action
+Requête | Action
 ------------ | -------------
 GET /items | Liste d'item
 GET /items/1782 | Item 1782
@@ -69,13 +69,13 @@ PUT /items/1782 | Mise à jour de l'item 1782
 DELETE /items/1782 | Suppression de l'item 1782
 
 
-> PATCH devrait être utilisé pour faire des updates partielles à la place de PUT. Mais il y a du travail en plus si on veut gérer ça [correctement](http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/) et rester RESTfull ce qui n'est pas l'objectif de ce document :)
+> PATCH devrait être utilisé pour faire des updates partielles à la place de PUT. Mais il y a du travail en plus si on veut gérer ça [correctement](http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/) et rester RESTful, ce qui n'est pas l'objectif de ce document :)
 
 ### Relations
 
 On a parfois des relations entre nos ressources. On utilisera la même mécanique via HTTP.
 
-URL | Action
+Requête | Action
 ------------ | -------------
 GET /items/1782/comments | Liste de commentaire de l'item 1782
 GET /items/1782/comments/56 | Commentaire 56 de l'item #1782
@@ -87,7 +87,7 @@ DELETE /items/1782/comments/56 | Suppression du commentaire 56 pour l'item 1782
 
 Il nous faut parfois effectuer des actions sur nos ressources, la pratique veut qu'on utilisera systématiquement **POST** (la  méthode **POST** est utilisée pour ajouter une nouvelle ressource; ici, la nouvelle ressource est l'action).
 
-URL | Action
+Requête | Action
 ------------ | -------------
 POST /items/1782/translate | Traduit l'item 1782
 POST /items/1782/enable | Active l'item 1782
@@ -99,13 +99,13 @@ Bien que généralement à éviter, une action est utile lorsqu'elle entraîne d
 
 On ne supporte que le format **JSON** pour la réponse.
 
-> [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI
+> [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI.
 
 [On retourne toujours un JSON pretty print](http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#pretty-print-gzip). C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip. 
 
 Les ids des représentations sont des UUID. Cela permet de ne pas se marcher sur les pieds avec les IDs que pourrait avoir à gérer le client pour son business.
 
-On n'enveloppe pas les réponses avec une propriété data ou item içi, ça n'a pas d'intérêt:
+On n'enveloppe pas les réponses avec une propriété data ou item ici, ça n'a pas d'intérêt:
 
 ```json
 {
@@ -142,7 +142,7 @@ Plutôt que:
 }
 ```
 
-Ce qui nous permettra éventuelement de retourner la ressource imbriquée inline et ainsi de garder la même structure de représentation et d'éviter des requètes supplémentaires. On pourra utiliser un header `X-Resource-Nested: true` pour indiquer au serveur que l'on veut aussi les ressources imbriquées.
+Ce qui nous permettra éventuellement de retourner la ressource imbriquée inline et ainsi de garder la même structure de représentation et d'éviter des requètes supplémentaires. On pourra utiliser un header `X-Resource-Nested: true` pour indiquer au serveur que l'on veut aussi les ressources imbriquées.
 
 ```json
 {
@@ -169,7 +169,7 @@ Retourner [`406 Not acceptable`](http://httpstatus.es/406) si on demande autre c
 
 > Si on doit gérer XML par exemple `Accept: application/json; application/xml` mais on garde JSON en choix n°1
 
-On accèpte du JSON pour le body des requètes dans le cas d'un POST, PUT ou PATCH. Ca nous permet d'avoir la même sérialisation entre le body de la requète et le body de la réponse.
+On accepte du JSON pour le body des requètes dans le cas d'un POST, PUT ou PATCH. Ca nous permet d'avoir la même sérialisation entre le body de la requète et le body de la réponse.
 On pourra facilement passer des structures complètes ou partielles de ressources et bénéficier du typage JSON: Array, String, Number, Object, Boolean, Null.
 
 La requête doit donc comporter un header Content-Type: `Content-Type: application/json;charset=utf-8`.
@@ -201,7 +201,7 @@ $ curl -X POST https://api.domain.com/v2/items \
 
 # Réponse
 
-Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans sont logging, debuging... en identifiant de manière unique chaque requète.
+Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans son logging, debugging... en identifiant de manière unique chaque requête.
 
 Il faudra aussi retourner le bon code HTTP:
 
@@ -211,13 +211,13 @@ HTTP status code | Information
 [`201 Created`](http://httpstatus.es/201) | POST lors de la création d'un item
 [`202 Accepted`](http://httpstatus.es/204) | La requête est ok, mais on la traitera plus tard
 [`204 No Content`](http://httpstatus.es/204) | DELETE sans body
-[`206 Partial content`](http://httpstatus.es/206) | Si la réponse ne renvoie pas l'ensemble de la resource (une liste par ex) 
+[`206 Partial content`](http://httpstatus.es/206) | Si la réponse ne renvoie pas l'ensemble de la ressource (une liste par ex) 
 
 Lors d'un [`200 Ok`](http://httpstatus.es/200) **on doit retourner la ressource**.
 
 Lors d'un [`201 Ok`](http://httpstatus.es/201):
 * on doit retourner la ressource
-* on doit indiquer l'URI de la nouvelle resource dans le header `Location: https://api.domain.com/v2/items/1783`
+* on doit indiquer l'URI de la nouvelle ressource dans le header `Location: https://api.domain.com/v2/items/1783`
 
 # Error
 
@@ -234,7 +234,7 @@ Il faut s'appuyer sur les status HTTP 40x et 50x qui répondent à tous les cas,
 
 Exemples:
 
-[`400 Bad Request`](http://httpstatus.es/400): on a mal formaté la requète, par exemple un body JSON non parsable.
+[`400 Bad Request`](http://httpstatus.es/400): on a mal formaté la requête, par exemple un body JSON non parsable.
 
 ```json
 {
@@ -244,7 +244,7 @@ Exemples:
 }
 ```
 
-[`422 Unprocessable Entity`](http://httpstatus.es/400): la requète est ok, mais les données envoyées ne sont pas valide.
+[`422 Unprocessable Entity`](http://httpstatus.es/400): la requête est ok, mais les données envoyées ne sont pas valides.
 
 ```json
 {
@@ -254,7 +254,7 @@ Exemples:
 }
 ```
 
-Dans le cas de la validation, on peut avoir besoin de gérer un retour d'erreur plus fin et donc renvoyer un tableau d'erreur.
+Dans le cas de la validation, on peut avoir besoin de gérer un retour d'erreur plus fin et donc renvoyer un tableau d'erreurs.
 
 ```json
 [
@@ -317,7 +317,7 @@ Link: <https://api.domain.com/v2/items?page=3&per_page=100>; rel="next", <https:
 
 > On peut aussi ajouter la première et la dernière page `rel=first` et `rel=last`.
 
-Ajouter un header custom pour indiquer le nombre totale de ressource disponible:
+Ajouter un header custom pour indiquer le nombre totale de ressources disponibles:
 ```http
 X-Total-Count: 456
 X-Page-Max-Range: 100
@@ -336,7 +336,7 @@ $ curl -X GET https://api.domain.com/v2/items?q=toto&isGeek=false&age=18,19&sort
     -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"
 ```
 
-> q pour une recherche fulltext. On peut aussi se servir des filtres pour faire une recherche sur un champs particulier, exemple name=Marado*
+> q pour une recherche fulltext. On peut aussi se servir des filtres pour faire une recherche sur un champ particulier, exemple name=Marado*
 
 # Cache via timestamp
 
@@ -347,7 +347,7 @@ Sinon on retourne la ressource avec le header ```Last-Modified```.
 
 # Authentification :construction:
 
-## HTTP basic authentification
+## HTTP basic
 
 ```http
 Authorization: Basic cGhwOm1lZXR1cA==
@@ -367,24 +367,24 @@ Authorization: Basic cGhwOm1lZXR1cA==
 
 Voir la [doc](http://oauth.net/2) 
 
-> Une grande majorité des géants du web l'utilise
+> Une grande majorité des géants du web l'utilisent
 
 # Rate limiting
 
-Pour garder un niveau de qualité et éviter les abus, il faut mettre en place un système de limitation des appels vers l'API. Classiquement on définie une période (1h) et un nombre de requête maximum pour cette période.
+Pour garder un niveau de qualité et éviter les abus, il faut mettre en place un système de limitation des appels vers l'API. Classiquement on définit une période (1h) et un nombre de requêtes maximum pour cette période.
 
 Header | Description
 ------------ | -------------
-X-Rate-Limit-Limit | Le nombre de requête possible pendant la période 
-X-Rate-Limit-Remaining | Le nombre de requête qu'il reste pour la période
-X-Rate-Limit-Reset | Le nombre de seconde qu'il reste avant de remettre les compteurs à 0
+X-Rate-Limit-Limit | Le nombre de requêtes possibles pendant la période 
+X-Rate-Limit-Remaining | Le nombre de requêtes qu'il reste pour la période
+X-Rate-Limit-Reset | Le nombre de secondes qu'il reste avant de remettre les compteurs à 0
 
 Si on dépasse la limite [`429 Too many requests`](http://httpstatus.es/429)
 
 # CORS
 
 Permet à une API et un client type Web App d'être sur des domaines différents sans que ça pose problème pour XMLHttpRequest.
-Le client enverra une requête `OPTIONS` (preflighted request) avant chaque requète pour vérifier ce qui est autorisé.
+Le client enverra une requête `OPTIONS` (preflighted request) avant chaque requête pour vérifier ce qui est autorisé.
 
 ```bash
 $ curl -X OPTIONS https://api.domain.com/v2/items?q=toto&isGeek=false
@@ -407,7 +407,7 @@ Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
 Access-Control-Allow-Headers: X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate-Limit-Reset, X-Total-Count, X-Page-Max-Range, X-Request-UUID, X-Resource-Nested
 ```
 
-> IE<10 ne supporte pas correctement CORS, dans ce cas il faudra se trourner vers JSONP
+> IE<10 ne supporte pas correctement CORS, dans ce cas il faudra se tourner vers JSONP
 
 # Documentation
 
@@ -416,4 +416,4 @@ Le mieux c'est que la documentation soit dans le code.
 
 http://apidocjs.com permet, via des annotations dans le code, de générer la documentation complète de votre API.
 
-Il faut mettre des exemples cURL dès que possibles.
+Il faut mettre des exemples cURL dès que possible.
