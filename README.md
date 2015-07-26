@@ -305,7 +305,7 @@ $ curl -X POST https://api.domain.com/v2/items?page=2&per_page=100 \
 
 Le serveur doit retourner [`206 Partial content`](http://httpstatus.es/206) si on n'a pas toutes les ressources.
 
-Si elles sont toutes retournée [`201 OK`](http://httpstatus.es/200)
+Si elles sont toutes retournée [`200 OK`](http://httpstatus.es/200)
 
 Utiliser le header `Link` pour transmettre la pagination:
 ```http
