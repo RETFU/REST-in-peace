@@ -101,7 +101,7 @@ On ne supporte que le format **JSON** pour la réponse.
 
 > [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI
 
-On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip. 
+[On retourne toujours un JSON pretty print](http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#pretty-print-gzip). C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip. 
 
 Les ids des représentations sont des UUID. Cela permet de ne pas se marcher sur les pieds avec les IDs que pourrait avoir à gérer le client pour son business.
 
