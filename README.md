@@ -186,7 +186,7 @@ $ curl -X POST https://api.domain.com/v2/items \
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
     -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"    
-    -d '{"name": "Jo", "age": 55, "isGeek": true}'
+    -d '{"name": "Jo", "age": 18, "isGeek": true}'
 
 {
   "id": 7856,
