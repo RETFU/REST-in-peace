@@ -4,19 +4,33 @@
 
 Ce document est une sorte de recette pour produire une API "REST" selon les bonnes pratiques en cours.
 
-Il n'est pas exhaustif, ne recensent pas toutes les pratiques.
-
-Des choix sont fait pour rester pragmatique quand il n'y a pas vraiment de bonnes pratiques.
+Il n'est pas exhaustif, des choix sont fait pour rester pragmatique quand il n'y a pas vraiment de bonnes pratiques.
 
 On parle içi d'API REST au sens "marketing" du terme puisque ce document ne vise pas à atteindre le level3 du 
 [modèle de maturité de Richardson](http://blog.xebia.fr/2010/06/25/rest-richardson-maturity-model/).<br/>
-On parlera pluôt d'une API HTTP++ (définit très justement par [William Durant](https://youtu.be/u_jDzcXCimM?list=PL9zDdgiGjkIc_1wnKTdU68dmVZ77ayPwW)).
+On parlera pluôt d'une API HTTP++ (définie très justement par [William Durant](https://youtu.be/u_jDzcXCimM?list=PL9zDdgiGjkIc_1wnKTdU68dmVZ77ayPwW)).
+
+Pour rappel:
+
+URI = https://api.domain.com/v2/items/5 
+
+Ressource = https://api.domain.com/v2/ **items/5**
+
+Représentation (içi JSON)
+```json
+{
+  "id": 7856,
+  "name": "Jo",
+  "age": 18,
+  "isGeek": true
+}
+```
 
 # Les bases
 
 Tous les appels doivent être fait via SSL.
 
-Tout est encodé en UTF-8: la réponse et la requète (header, body, querystring).
+Tout est encodé en UTF-8: la réponse (représentation) et la requète (header, body, querystring).
 
 L'api doit être versionnée via l'URL: https://api.domain.com/v2
 
@@ -36,7 +50,7 @@ Date | Toujours UTC et au format [ISO8601](https://en.wikipedia.org/wiki/ISO_860
 # Ressource
 
 * Toujours au pluriel
-* Nommé avec des - ou des _
+* Nommée avec des - ou des _
 * Ne reflète pas forcément votre modèle de donnée
 * Une ressource = une URI
 * Une ressource = plusieurs représentation (JSON, XML, ...)
@@ -52,8 +66,10 @@ GET /items/1782 | Item 1782
 POST /items | Creation d'un nouvel item
 PUT /items | Mise à jour de plusieurs items
 PUT /items/1782 | Mise à jour de l'item 1782
-PATCH /items/1782 | Mise à jour partielle de l'item 1782 (1 ou plusieurs propriétés)
 DELETE /items/1782 | Suppression de l'item 1782
+
+
+> PATCH devrait être utilisé pour faire des updates partielles à la place de PUT. Mais il y a du travail en plus si on veut gérer ça [correctement](http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/) et rester RESTfull ce qui n'est pas l'objectif de ce document :)
 
 ### Relations
 
@@ -65,7 +81,6 @@ GET /items/1782/comments | Liste de commentaire de l'item 1782
 GET /items/1782/comments/56 | Commentaire 56 de l'item #1782
 POST /items/1782/comments | Création d'un commentaire pour l'item 1782
 PUT /items/1782/comments/56 | Mise à jour du commentaire 56 pour l'item 1782
-PATCH /items/1782/comments/56 | Mise à jour partielle du commentaire #56 pour l'item #1782
 DELETE /items/1782/comments/56 | Suppression du commentaire 56 pour l'item 1782
 
 ### Actions
@@ -125,7 +140,7 @@ Plutôt que:
 }
 ```
 
-Ce qui nous permettra éventuelement de retourner la ressource imbriquée inline et ainsi de garder la même structure de réponse et d'éviter des requètes supplémentaires. On pourra utiliser un header `X-Resource-Nested: true` pour indiquer au serveur que l'on veut aussi les ressources imbriquées.
+Ce qui nous permettra éventuelement de retourner la ressource imbriquée inline et ainsi de garder la même structure de représentation et d'éviter des requètes supplémentaires. On pourra utiliser un header `X-Resource-Nested: true` pour indiquer au serveur que l'on veut aussi les ressources imbriquées.
 
 ```json
 {
@@ -159,7 +174,7 @@ La requête doit donc comporter un header Content-Type: `Content-Type: applicati
 
 Retourner [`415 Unsupported media type`](http://httpstatus.es/415) si Content-type n'est pas supporté par le serveur.
 
-> On peut supporter `x-www-form-urlencoded` en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côté serveur à typer les valeurs manuellement et on n'aura pas de structure de ressource out of box.
+> On peut supporter `Content-Type: application/x-www-form-urlencoded` en parallèle, à voir en fonction des clients qui consommeront l'API. Mais ça obligera côté serveur à typer les valeurs manuellement et on n'aura pas de structure de ressource out of box.
 
 Il ne faudra pas oublier d'indiquer qu'on veut la réponse gzippée via `Accept-Encoding: gzip`.
 
@@ -170,6 +185,7 @@ $ curl -X POST https://api.domain.com/v2/items \
     -H "Content-Type: application/json;charset=utf-8" \
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
+    -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"    
     -d '{"name": "Jo", "age": 55, "isGeek": true}'
 
 {
@@ -190,7 +206,7 @@ Il faudra aussi retourner le bon code HTTP:
 HTTP status code | Information
 ------------ | -------------
 [`200 Ok`](http://httpstatus.es/200) | GET, PUT, PATCH et DELETE ainsi que pour POST lors d'une "action"
-[`201 Created`](http://httpstatus.es/201) | POST
+[`201 Created`](http://httpstatus.es/201) | POST lors de la création d'un item
 [`202 Accepted`](http://httpstatus.es/204) | La requête est ok, mais on la traitera plus tard
 [`204 No Content`](http://httpstatus.es/204) | DELETE sans body
 [`206 Partial content`](http://httpstatus.es/206) | Si la réponse ne renvoie pas l'ensemble de la resource (une liste par ex) 
@@ -210,7 +226,7 @@ Il faut s'appuyer sur les status HTTP 40x et 50x qui répondent à tous les cas,
 {
   "code": "error_code",
   "description": "More details about the error here",
-  "url": "https://doc.domain.com/error/error_code"
+  "url": "https://doc.domain.com/api/error/error_code"
 }
 ```
 
@@ -222,7 +238,7 @@ Exemples:
 {
   "code": "invalid_request",
   "message": "Can't parse the request body, JSON not valid.",
-  "url": "https://doc.domain.com/error/invalid_request"
+  "url": "https://doc.domain.com/api/error/invalid_request"
 }
 ```
 
@@ -232,7 +248,7 @@ Exemples:
 {
   "code": "invalid_item",
   "message": "Name is required, isGeek must be a boolean.",
-  "url": "https://doc.domain.com/error/invalid_item"
+  "url": "https://doc.domain.com/api/error/invalid_item"
 }
 ```
 
@@ -243,12 +259,12 @@ Dans le cas de la validation, on peut avoir besoin de gérer un retour d'erreur 
     {
         "code": "invalid_item_name",
         "message": "Name is required",
-        "url": "https://doc.domain.com/error/invalid_item_name"
+        "url": "https://doc.domain.com/api/error/invalid_item_name"
     },
     {
         "code": "invalid_item_geek",
         "message": "isGeek must be a boolean.",
-        "url": "https://doc.domain.com/error/invalid_item_geek"
+        "url": "https://doc.domain.com/api/error/invalid_item_geek"
     },
 ]
 ```
@@ -276,21 +292,24 @@ HTTP status code | Information
 On utilise la querystring:
 
 ```bash
-$ curl -X POST https://api.domain.com/v2/item?page=2&per_page=100 \
+$ curl -X POST https://api.domain.com/v2/items?page=2&per_page=100 \
     -H "Content-Type: application/json"
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
+    -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"
 ```
 
 > On pourrait utiliser le header `Range` mais par affordance et pour le côté pratique il vaut mieux utiliser la querystring.
 
 ## Réponse
 
-Le serveur doit retourner [`206 Partial content`](http://httpstatus.es/206) si on n'a pas toutes les ressrouces, si elles sont toutes retournée [`201 OK`](http://httpstatus.es/200)
+Le serveur doit retourner [`206 Partial content`](http://httpstatus.es/206) si on n'a pas toutes les ressources.
+
+Si elles sont toutes retournée [`201 OK`](http://httpstatus.es/200)
 
 Utiliser le header `Link` pour transmettre la pagination:
 ```http
-Link: <https://api.domain.com/v2/item?page=3&per_page=100>; rel="next", <https://api.domain.com/v2/item?page=1&per_page=100>; rel="prev"
+Link: <https://api.domain.com/v2/items?page=3&per_page=100>; rel="next", <https://api.domain.com/v2/items?page=1&per_page=100>; rel="prev"
 ```
 > Le client n'aura pas à construire la pagination.
 
@@ -308,10 +327,11 @@ Le serveur doit retourner [`400 Bad request`](http://httpstatus.es/400) si on d�
 On utilise la querystring:
 
 ```bash
-$ curl -X POST https://api.domain.com/v2/item?q=toto&isGeek=false&age=18,19&sort=name,id \
+$ curl -X POST https://api.domain.com/v2/items?q=toto&isGeek=false&age=18,19&sort=name,id \
     -H "Content-Type: application/json"
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
+    -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"
 ```
 
 > q pour une recherche fulltext. On peut aussi se servir des filtres pour faire une recherche sur un champs particulier, exemple name=Marado*
@@ -332,8 +352,8 @@ Authorization: Basic cGhwOm1lZXR1cA==
 ```
 
 * username:password encodé en base64
-* toujours utilisé avec SSL
-* maîtrise le client et le serveur (le user:password est côté client)
+* toujours utiliser avec SSL
+* maîtriser le client et le serveur (le user:password est côté client)
 
 > Rapide à mettre en place, mais pas très secure, on doit avoir les credentials sur le client
 
@@ -344,7 +364,7 @@ GET /items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx&signature=3051d3c053
 ```
 
 * le client signe la requête ```signature=SHA256( items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx )```
-* le serveur valide la signature et vérifie si le timestamp < X secondes (X étant définit sur le serveur)
+* le serveur valide la signature et vérifie si le timestamp < X secondes (X étant définie sur le serveur)
 
 > Il faut que le client et le serveur soit configuré de la même façon niveau date pour avoir des timestamps comparables
 
@@ -356,11 +376,11 @@ Voir la [doc](http://oauth.net/2)
 
 # Rate limiting
 
-Pour garder un niveau de qualité et éviter les abus, il faut mettre en place un système de limitation des appels vers l'API. Classiquement on définit une période (1h) et un nombre de requête maximum pour cette période.
+Pour garder un niveau de qualité et éviter les abus, il faut mettre en place un système de limitation des appels vers l'API. Classiquement on définie une période (1h) et un nombre de requête maximum pour cette période.
 
 Header | Description
 ------------ | -------------
-X-Rate-Limit-Limit | Le nomber de requête possible pendant la mériode 
+X-Rate-Limit-Limit | Le nombre de requête possible pendant la période 
 X-Rate-Limit-Remaining | Le nombre de requête qu'il reste pour la période
 X-Rate-Limit-Reset | Le nombre de seconde qu'il reste avant de remettre les compteurs à 0
 
@@ -375,9 +395,9 @@ En retour le serveur indiquera ce qui est permis, exemple:
 
 ```http
 Access-Control-Allow-Origin: *
-Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
 Access-Control-Allow-Credentials: true
-Access-Control-Allow-Headers: X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate-Limit-Reset
+Access-Control-Allow-Headers: X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate-Limit-Reset, X-Total-Count, X-Page-Max-Range, X-Request-UUID, X-Resource-Nested
 ```
 
 > IE<10 ne supporte pas correctement CORS, dans ce cas il faudra se trourner vers JSONP
@@ -385,7 +405,7 @@ Access-Control-Allow-Headers: X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate
 # Documentation
 
 C'est un point clé pour que l'API soit populaire. Il faut qu'elle soit maintenue et **facile à maintenir**!
-Le mieux c'est que la documentation parte du code.
+Le mieux c'est que la documentation soit dans le code.
 
 http://apidocjs.com permet, via des annotations dans le code, de générer la documentation complète de votre API.
 
