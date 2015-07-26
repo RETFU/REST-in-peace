@@ -343,7 +343,7 @@ Sinon on retourne la ressource avec le header ```Last-Modified```.
 
 > On pourrait utiliser Etag, mais ça nécessite de maintenir un hash de la ressource alors qu'on aura toujours un timestamp de modification.
 
-# Authentification
+# Authentification :construction:
 
 ## HTTP basic authentification
 
@@ -357,18 +357,11 @@ Authorization: Basic cGhwOm1lZXR1cA==
 
 > Rapide à mettre en place, mais pas très secure, on doit avoir les credentials sur le client
 
-## Query Authentification
+## JWT :construction:
 
-```http
-GET /items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx&signature=3051d3c053e291b723f16944893df966ccea2a34ee162d5ccda1276a47e796e7
-```
+...
 
-* le client signe la requête ```signature=SHA256( items?param=X&timestamp=1261496500&apiKey=MeetupPHPBbx )```
-* le serveur valide la signature et vérifie si le timestamp < X secondes (X étant définie sur le serveur)
-
-> Il faut que le client et le serveur soit configuré de la même façon niveau date pour avoir des timestamps comparables
-
-## OAuth2
+## OAuth2 :construction:
 
 Voir la [doc](http://oauth.net/2) 
 
