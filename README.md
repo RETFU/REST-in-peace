@@ -19,7 +19,7 @@ Ressource = https://api.domain.com/v2/ **items/5**
 Représentation (ici JSON)
 ```json
 {
-  "id": 7856,
+  "id": "110e8400-e29b-11d4-a716-446655897563",
   "name": "Jo",
   "age": 18,
   "isGeek": true
@@ -112,7 +112,7 @@ On n'enveloppe pas les réponses avec une propriété data ou item ici, ça n'a 
 
 ```json
 {
-  "id": 7856,
+  "id": "110e8400-e29b-11d4-a716-446655897563",
   "name": "Jo",
   "age": 18,
   "isGeek": true
@@ -123,12 +123,12 @@ Si on a des ressources imbriquées, on retourne:
 
 ```json
 {
-  "id": 7856,
+  "id": "110e8400-e29b-11d4-a716-446655897563",
   "name": "Jo",
   "age": 18,
   "isGeek": true,
   "country": {
-    "id": 569
+    "id": "110e8400-e29b-11d4-a716-446655898965"
   }
 }
 ```
@@ -137,11 +137,11 @@ Plutôt que:
 
 ```json
 {
-  "id": 7856,
+  "id": "110e8400-e29b-11d4-a716-446655897563",
   "name": "Jo",
   "age": 18,
   "isGeek": true,
-  "country_id": 569
+  "country_id": "110e8400-e29b-11d4-a716-446655898965"
 }
 ```
 
@@ -149,12 +149,12 @@ Ce qui nous permettra éventuellement de retourner la ressource imbriquée inlin
 
 ```json
 {
-  "id": 7856,
+  "id": "110e8400-e29b-11d4-a716-446655897563",
   "name": "Jo",
   "age": 18,
   "isGeek": true,
   "country": {
-    "id": 569,
+    "id": "110e8400-e29b-11d4-a716-446655898965",
     "name": "France",
     "codeISO": "FR"
   }
@@ -194,7 +194,7 @@ $ curl -X POST https://api.domain.com/v2/items \
     -d '{"name": "Jo", "age": 18, "isGeek": true}'
 
 {
-  "id": 7856,
+  "id": "110e8400-e29b-11d4-a716-446655897563",
   "name": "Jo",
   "age": 18,
   "isGeek": true
@@ -205,6 +205,8 @@ $ curl -X POST https://api.domain.com/v2/items \
 # Réponse
 
 Ajouter pour chaque requète un header `X-Request-UUID: 454684315618613`, ceci aidera le client dans son logging, debugging... en identifiant de manière unique chaque requête.
+
+> Utiliser la version 1 de la RFC 4122 car elle est time-based et donc indexable séquentiellement
 
 Il faudra aussi retourner le bon code HTTP:
 
