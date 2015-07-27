@@ -347,7 +347,7 @@ $ curl -X GET https://api.domain.com/v2/items?q=toto&isGeek=false&age=18,19&sort
 On envoie le header ```If-Modified-Since``` pour valider que la ressource n'a pas été modifiée. Dans ce cas on retourne un [`304 Not Modified`](http://httpstatus.es/304).
 Sinon on retourne la ressource avec le header ```Last-Modified```.
 
-> On pourrait utiliser Etag, mais ça nécessite de maintenir un hash de la ressource alors qu'on aura toujours un timestamp de modification.
+> On pourrait utiliser Etag, mais ça nécessite de maintenir un hash ou une révision (si la ressource était versionnée) par exemple, alors qu'on aura toujours/très probablement un timestamp de modification.
 
 # Authentification :construction:
 
