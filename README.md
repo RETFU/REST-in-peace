@@ -85,7 +85,7 @@ DELETE /items/1782/comments/56 | Suppression du commentaire 56 pour l'item 1782
 
 ### Actions
 
-Il nous faut parfois effectuer des actions sur nos ressources, la pratique veut qu'on utilisera systématiquement **POST** (la  méthode **POST** est utilisée pour ajouter une nouvelle ressource; ici, la nouvelle ressource est l'action).
+Il nous faut parfois effectuer des actions sur nos ressources, la  méthode **POST** est utilisée pour ajouter une nouvelle ressource; ici, la nouvelle ressource est l'action.
 
 Requête | Action
 ------------ | -------------
@@ -93,7 +93,10 @@ POST /items/1782/translate | Traduit l'item 1782
 POST /items/1782/enable | Active l'item 1782
 POST /items/1782/comments/56/star | Met en favori le commentaire 56 de l'item 1782
 
-Bien que généralement à éviter, une action est utile lorsqu'elle entraîne des effets de bord non observables via l'API, ou pour simplifier une opération courante qui requerrait plusieurs appels RESTful.
+Bien que généralement à éviter, une action est utile car elle peut permettre de:
+* simplifier l'API (avoir une action "enable" plutôt que de devoir mettre à jour la ressource)
+* ajouter des "fonctionnalités" qui ne change pas l'état de la ressource (translate)
+
 
 # Représentation
 
@@ -101,7 +104,7 @@ On ne supporte que le format **JSON** pour la réponse.
 
 > [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI.
 
-[On retourne toujours un JSON pretty print](http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#pretty-print-gzip). C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip. 
+On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip. 
 
 Les ids des représentations sont des UUID. Cela permet de ne pas se marcher sur les pieds avec les IDs que pourrait avoir à gérer le client pour son business.
 
@@ -281,7 +284,7 @@ HTTP status code | Information
 [`404 Not Found`](http://httpstatus.es/404) | Resource pas trouvée (inexistante ou suite à un `DELETE`)
 [`405 Method Not Allowed`](http://httpstatus.es/405) | Méthode HTTP non autorisée (utilisation d'un `POST` alors qu'on attend un `DELETE`)
 [`406 Not acceptable`](http://httpstatus.es/405) | Format de retour non disponible (la requête demande du XML alors qu'on ne gère que du JSON)
-[`409 Conflict`](http://httpstatus.es/409) | Typiquement quand on POST une ressource qui existe déjà, ou qu'un PATCH incompatible a été soumis par un autre agent
+[`409 Conflict`](http://httpstatus.es/409) | `POST` une ressource avec un/des champs qui doivent être unique (duplication interdite)<br/>`PATCH` incompatible a été soumis par un autre agent
 [`415 Unsupported Media Type`](http://httpstatus.es/415) | Content type pas supporté (on envoie du XML alors qu'on ne suppporte que JSON)
 [`422 Unprocessable Entity`](http://httpstatus.es/422) | Tout ce qui touche à la validation
 [`429 Too Many Requests`](http://httpstatus.es/429) | Trop de requêtes (on a dépassé le rate limit)
