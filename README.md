@@ -299,7 +299,7 @@ HTTP status code | Information
 On utilise la querystring:
 
 ```bash
-$ curl -X POST https://api.domain.com/v2/items?page=2&per_page=100 \
+$ curl -X GET https://api.domain.com/v2/items?page=2&per_page=100 \
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
     -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"
