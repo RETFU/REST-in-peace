@@ -387,12 +387,11 @@ Si on dépasse la limite [`429 Too many requests`](http://httpstatus.es/429)
 # CORS
 
 Permet à une API et un client type Web App d'être sur des domaines différents sans que ça pose problème pour XMLHttpRequest.
-Le client enverra une requête `OPTIONS` (preflighted request) avant chaque requête pour vérifier ce qui est autorisé.
+Le client enverra une requête `OPTIONS` (preflighted request) avant chaque requête `POST`, `PUT`, `PATCH` et `DELETE` pour vérifier ce qui est autorisé.
 
 ```bash
 $ curl -X OPTIONS https://api.domain.com/v2/items?q=toto&isGeek=false
 &age=18,19&sort=name,id \
-    -H "Content-Type: application/json" \
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
     -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT" \
