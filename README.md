@@ -198,7 +198,6 @@ $ curl -X POST https://api.domain.com/v2/items \
   "name": "Jo",
   "age": 18,
   "isGeek": true
-  ...
 }
 ```
 
@@ -301,7 +300,6 @@ On utilise la querystring:
 
 ```bash
 $ curl -X POST https://api.domain.com/v2/items?page=2&per_page=100 \
-    -H "Content-Type: application/json"
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
     -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"
@@ -336,7 +334,6 @@ On utilise la querystring:
 
 ```bash
 $ curl -X GET https://api.domain.com/v2/items?q=toto&isGeek=false&age=18,19&sort=name,id \
-    -H "Content-Type: application/json"
     -H "Accept: application/json" \
     -H "Accept-Encoding: gzip" \
     -H "If-Modified-Since: Fri, 31 Jul 2015 20:41:30 GMT"
