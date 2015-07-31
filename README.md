@@ -12,9 +12,9 @@ On parlera pluôt d'une API HTTP++ (définie très justement par [William Durant
 
 Pour rappel:
 
-URL = https://api.domain.com/v2/items/5 
+URL = https://api.domain.com/v2/items/110e8400-e29b-11d4-a716-446655897563 
 
-Ressource = https://api.domain.com/v2/ **items/5**
+Ressource = https://api.domain.com/v2/ **items/110e8400-e29b-11d4-a716-446655897563**
 
 Représentation (ici JSON)
 ```json
