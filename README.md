@@ -216,10 +216,10 @@ HTTP status code | Information
 [`204 No Content`](http://httpstatus.es/204) | DELETE sans body
 [`206 Partial content`](http://httpstatus.es/206) | Si la réponse ne renvoie pas l'ensemble de la ressource (une liste par ex) 
 
-Lors d'un [`200 Ok`](http://httpstatus.es/200) **on doit retourner la ressource**.
+Lors d'un [`200 Ok`](http://httpstatus.es/200) **on doit retourner la représentation**.
 
 Lors d'un [`201 Ok`](http://httpstatus.es/201):
-* on doit retourner la ressource
+* on doit retourner la représentation
 * on doit indiquer l'URL de la nouvelle ressource dans le header `Location: https://api.domain.com/v2/items/1783`
 
 # Error
