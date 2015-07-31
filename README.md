@@ -392,8 +392,7 @@ Le client enverra une requête `OPTIONS` (preflighted request) avant chaque requ
 $ curl -X OPTIONS https://api.domain.com/v2/items?q=toto&isGeek=false
 &age=18,19&sort=name,id \
     -H "Access-Control-Allow-Methods: GET" \
-    -H "Access-Control-Allow-Headers: X-Rate-Limit-Limit, X-Rate-Limit-
-    Remaining, X-Rate-Limit-Reset, X-Total-Count, X-Page-Max-Range, X-Request-UUID, X-Resource-Nested" \
+    -H "Access-Control-Allow-Headers: X-Resource-Nested" \
     -H "Origin: http://superappjs.com"
 ```
 
