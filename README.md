@@ -27,7 +27,7 @@ Représentation (ici JSON)
 }
 ```
 
-### Protocol
+### Protocole
 
 Tous les appels doivent être faits via SSL.
 
