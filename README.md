@@ -43,6 +43,12 @@ Pas plus de 2 versions en même temps sinon c'est ingérable.
 
 > Possible via Header `Accept: application/json; version=2` mais par affordance et pour le côté pratique il vaut mieux utiliser l'URL
 
+Il peut être pratique d'indiquer à votre consomateur d'API quel est la version exact utilisée via un header custom:
+
+```http
+YOURCOMPANYNAME-VERSION: 1.21
+```
+
 ### Type de données
 
 Type | Description
