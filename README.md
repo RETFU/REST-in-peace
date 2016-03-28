@@ -373,9 +373,36 @@ Authorization: Basic cGhwOm1lZXR1cA==
 
 > Rapide à mettre en place, mais pas très secure, on doit avoir les credentials sur le client
 
-## JWT :construction:
+## JWT
 
-...
+Après une première requête d'authentification (typiquement HTTP Basic), le backend renvoie en réponse un token JWT qui sera
+passé par la suite à toutes les requêtes effectuées sur l'API via header:
+
+```http
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+```
+
+Pour plus d'information sur JWT voir l'excellent https://jwt.io.
+
+Le token est constitué d'un header pour définir son algo de hash et d'un payload, exemple:
+
+```json
+{
+  "exp": "1459173388",
+  "name": "John Doe",
+  "admin": true,
+}
+```
+
+Le payload peut être vu comme un cookie HTTP pour API.  
+On peut y mettre des informations métier qui sont utiles pour chaque requêtes. Içi on indique le nom du user et sa qualité d'admin. On n'a donc pas besoin à chaque requête d'aller chercher ses informations dans notre SI.
+
+> Attention à garder ce payload léger pour ne pas alourdir vos requêtes.  
+> Il ne faut pas non plus y mettre d'informations sensible, JWT n'étant pas un protocole d'échange de données cryptées!
+
+Il conviendra aussi d'adapter la durée de vie d'un token via le mot clef réservé `exp` (içi un timestamp).  
+On pourra ainsi invalider des tokens trop anciens et s'assurer qu'un token ne soit pas valable à vie côté backend.
+
 
 ## OAuth2 :construction:
 
