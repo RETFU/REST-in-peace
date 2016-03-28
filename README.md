@@ -6,13 +6,14 @@ Ce document est une sorte de recette pour produire une API "REST" selon les bonn
 
 Il n'est pas exhaustif, des choix sont faits pour rester pragmatique quand il n'y a pas vraiment de bonnes pratiques.
 
-On parle ici d'API REST au sens "marketing" du terme puisque ce document ne vise pas à atteindre le level3 du 
-[modèle de maturité de Richardson](http://blog.xebia.fr/2010/06/25/rest-richardson-maturity-model/).<br/>
-On parlera pluôt d'une API HTTP++ (définie très justement par [William Durant](https://youtu.be/u_jDzcXCimM?list=PL9zDdgiGjkIc_1wnKTdU68dmVZ77ayPwW)).
+On parle ici d'API REST au sens "marketing" du terme puisque ce document ne vise pas à atteindre le level3 du
+[modèle de maturité de Richardson](http://blog.xebia.fr/2010/06/25/rest-richardson-maturity-model/). On parlera pluôt d'une API HTTP++ (définie très justement par [William Durant](https://youtu.be/u_jDzcXCimM?list=PL9zDdgiGjkIc_1wnKTdU68dmVZ77ayPwW)).
 
-Pour rappel:
+# Les bases
 
-URL = https://api.domain.com/v2/items/110e8400-e29b-11d4-a716-446655897563 
+### Vocabulaire
+
+URL = https://api.domain.com/v2/items/110e8400-e29b-11d4-a716-446655897563
 
 Ressource = https://api.domain.com/v2/ **items/110e8400-e29b-11d4-a716-446655897563**
 
@@ -26,18 +27,23 @@ Représentation (ici JSON)
 }
 ```
 
-# Les bases
+### Protocol
 
 Tous les appels doivent être faits via SSL.
 
+### Encodage
+
 Tout est encodé en UTF-8: la réponse (représentation) et la requète (header, body, querystring).
+
+### Versioning
 
 L'api doit être versionnée via l'URL: https://api.domain.com/v2
 
-> Pas plus de 2 versions en même temps sinon c'est ingérable
-> <br/>Via Header `Accept: application/json; version=2` mais par affordance et pour le côté pratique il vaut mieux utiliser l'URL
+Pas plus de 2 versions en même temps sinon c'est ingérable.
 
-#### Type de données
+> Possible via Header `Accept: application/json; version=2` mais par affordance et pour le côté pratique il vaut mieux utiliser l'URL
+
+### Type de données
 
 Type | Description
 ------------ | -------------
@@ -104,7 +110,7 @@ On ne supporte que le format **JSON** pour la réponse.
 
 > [Plus personne n'utilise XML](http://www.google.com/trends/explore?q=xml+api#q=xml%20api%2C%20json%20api&cmpt=q) sauf dans un contexte grand compte / DSI.
 
-On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip. 
+On retourne toujours un JSON pretty print. C'est plus human-friendly et ce n'est pas trop un problème avec la compression gzip.
 
 Les ids des représentations sont des UUID. Cela permet de ne pas se marcher sur les pieds avec les IDs que pourrait avoir à gérer le client pour son business.
 
@@ -214,7 +220,7 @@ HTTP status code | Information
 [`201 Created`](http://httpstatus.es/201) | POST lors de la création d'un item
 [`202 Accepted`](http://httpstatus.es/204) | La requête est ok, mais on la traitera plus tard
 [`204 No Content`](http://httpstatus.es/204) | DELETE sans body
-[`206 Partial content`](http://httpstatus.es/206) | Si la réponse ne renvoie pas l'ensemble de la ressource (une liste par ex) 
+[`206 Partial content`](http://httpstatus.es/206) | Si la réponse ne renvoie pas l'ensemble de la ressource (une liste par ex)
 
 Lors d'un [`200 Ok`](http://httpstatus.es/200) **on doit retourner la représentation**.
 
@@ -367,7 +373,7 @@ Authorization: Basic cGhwOm1lZXR1cA==
 
 ## OAuth2 :construction:
 
-Voir la [doc](http://oauth.net/2) 
+Voir la [doc](http://oauth.net/2)
 
 > Une grande majorité des géants du web l'utilisent
 
@@ -377,7 +383,7 @@ Pour garder un niveau de qualité et éviter les abus, il faut mettre en place u
 
 Header | Description
 ------------ | -------------
-X-Rate-Limit-Limit | Le nombre de requêtes possibles pendant la période 
+X-Rate-Limit-Limit | Le nombre de requêtes possibles pendant la période
 X-Rate-Limit-Remaining | Le nombre de requêtes qu'il reste pour la période
 X-Rate-Limit-Reset | Le nombre de secondes qu'il reste avant de remettre les compteurs à 0
 
